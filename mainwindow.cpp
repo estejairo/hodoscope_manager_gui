@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 
+bool check = True;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -205,6 +207,7 @@ void MainWindow::distance_valueChanged(double arg){
 
 void MainWindow::on_checkBox_toggled(bool checked)
 {
+    check = checked;
     emit changeConnectionType(checked);
 }
 
@@ -218,8 +221,23 @@ void MainWindow::on_toolButton_clicked()
 void MainWindow::on_pushButton_2_clicked()
 {
     std::cout<<__FILE__<<__LINE__<<std::endl;
-    bool checked = true;
-    emit changeConnectionType(checked);
+    if (check){
+      connect(class_serial,&SerialManager::dataRead,this,&DataManager::processSerialData);
+      connect(class_serial,&SerialManager::sendParams,this,&DataManager::getSignal);
+      connect(this,&DataManager::sendtoSerial,this,&DataManager::sendSerialData);
+      connect(this,&DataManager::sendData,class_serial,&SerialManager::sendData);
+    }
+    else {
+      QTimer *timer = new QTimer(this);
+      connect(timer,&QTimer::timeout,this,&DataManager::getSql);
+      timer->start(200);
+
+      connect(this,&DataManager::newNpoints,class_wifi,&WifiManager::getParameters);
+      connect(class_wifi,&WifiManager::sendParameters,this,&DataManager::processSqlData);
+      connect(this,&DataManager::sendtoSql,class_wifi,&WifiManager::setParameters);
+    }
+    //bool checked = true;
+    //emit changeConnectionType(checked);
 }
 
 void MainWindow::setInitValues(){
