@@ -15,7 +15,10 @@ DataManager::DataManager(QObject *parent) :
     connect(this,&DataManager::plot,this,&DataManager::sendPlot);
     std::cout<<__FILE__<<__LINE__<<" inicializando Plot"<<std::endl;
     class_serial = new SerialManager(this);
-
+    connect(class_serial,&SerialManager::dataRead,this,&DataManager::processSerialData);
+    connect(class_serial,&SerialManager::sendParams,this,&DataManager::getSignal);
+    connect(this,&DataManager::sendtoSerial,this,&DataManager::sendSerialData);
+    connect(this,&DataManager::sendData,class_serial,&SerialManager::sendData);
     std::cout<<__FILE__<<__LINE__<<std::endl;
 
 }
@@ -28,12 +31,24 @@ std::cout<<__FILE__<<__LINE__<<std::endl;
         class_serial = new SerialManager(this);
        class_wifi->disconnect();                   //si esta uart , desconecta WIFI
        delete class_wifi;
+        connect(class_serial,&SerialManager::dataRead,this,&DataManager::processSerialData);
+        connect(class_serial,&SerialManager::sendParams,this,&DataManager::getSignal);
+        connect(this,&DataManager::sendtoSerial,this,&DataManager::sendSerialData);
+        connect(this,&DataManager::sendData,class_serial,&SerialManager::sendData);
         std::cout<<__FILE__<<__LINE__<<std::endl;
     }
     else{
         class_serial->disconnect();             //si esta WIFI, desconecta serial
         delete class_serial;
         class_wifi = new WifiManager(this);
+
+        QTimer *timer = new QTimer(this);
+        connect(timer,&QTimer::timeout,this,&DataManager::getSql);
+        timer->start(200);
+
+        connect(this,&DataManager::newNpoints,class_wifi,&WifiManager::getParameters);
+        connect(class_wifi,&WifiManager::sendParameters,this,&DataManager::processSqlData);
+        connect(this,&DataManager::sendtoSql,class_wifi,&WifiManager::setParameters);
     }
 }
 
