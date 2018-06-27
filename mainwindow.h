@@ -14,6 +14,9 @@
 #include "distancedialog.h"
 #include "datamanager.h"
 
+extern bool check;
+extern bool last_check;
+
 namespace Ui {
 class MainWindow;
 }
@@ -32,7 +35,7 @@ signals:
 
     void parameterChanged(double,double,double,double,int);
     void newNpoints(int);
-    void changeConnectionType(bool);
+    void changeConnectionType();
     void fileName(QString);
 
 private slots:

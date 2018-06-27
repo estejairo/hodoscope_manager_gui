@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QTextStream>
 
+
 DataManager::DataManager(QObject *parent) :
     QObject(parent)
 {
@@ -14,19 +15,14 @@ DataManager::DataManager(QObject *parent) :
     npoints = 10;
     connect(this,&DataManager::plot,this,&DataManager::sendPlot);
     std::cout<<__FILE__<<__LINE__<<" inicializando Plot"<<std::endl;
+    
     class_serial = new SerialManager(this);
-    connect(class_serial,&SerialManager::dataRead,this,&DataManager::processSerialData);
-    connect(class_serial,&SerialManager::sendParams,this,&DataManager::getSignal);
-    connect(this,&DataManager::sendtoSerial,this,&DataManager::sendSerialData);
-    connect(this,&DataManager::sendData,class_serial,&SerialManager::sendData);
-    std::cout<<__FILE__<<__LINE__<<std::endl;
 
 }
 
-void DataManager::connectionType(bool uart){       //tipo de conexion seria: uart=1
-    uart_state = uart;
+void DataManager::connectionType(){       //tipo de conexion seria: uart=1
 std::cout<<__FILE__<<__LINE__<<std::endl;
-    if(uart_state){
+    if((last_check == 0)&(check==1)){
         std::cout<<__FILE__<<__LINE__<<std::endl;
         class_serial = new SerialManager(this);
        class_wifi->disconnect();                   //si esta uart , desconecta WIFI
@@ -37,7 +33,7 @@ std::cout<<__FILE__<<__LINE__<<std::endl;
         connect(this,&DataManager::sendData,class_serial,&SerialManager::sendData);
         std::cout<<__FILE__<<__LINE__<<std::endl;
     }
-    else{
+    else if ((last_check == 1)&(check==0)){
         class_serial->disconnect();             //si esta WIFI, desconecta serial
         delete class_serial;
         class_wifi = new WifiManager(this);
@@ -49,6 +45,22 @@ std::cout<<__FILE__<<__LINE__<<std::endl;
         connect(this,&DataManager::newNpoints,class_wifi,&WifiManager::getParameters);
         connect(class_wifi,&WifiManager::sendParameters,this,&DataManager::processSqlData);
         connect(this,&DataManager::sendtoSql,class_wifi,&WifiManager::setParameters);
+    }
+    else if ((last_check == 1)&(check==1)){
+        connect(class_serial,&SerialManager::dataRead,this,&DataManager::processSerialData);
+        connect(class_serial,&SerialManager::sendParams,this,&DataManager::getSignal);
+        connect(this,&DataManager::sendtoSerial,this,&DataManager::sendSerialData);
+        connect(this,&DataManager::sendData,class_serial,&SerialManager::sendData);
+    }
+    else {
+      QTimer *timer = new QTimer(this);
+      connect(timer,&QTimer::timeout,this,&DataManager::getSql);
+      timer->start(200);
+
+      connect(this,&DataManager::newNpoints,class_wifi,&WifiManager::getParameters);
+      connect(class_wifi,&WifiManager::sendParameters,this,&DataManager::processSqlData);
+      connect(this,&DataManager::sendtoSql,class_wifi,&WifiManager::setParameters);
+
     }
 }
 
