@@ -87,10 +87,10 @@ void DataManager::processSerialData(QByteArray dataIn){
 
     if(dataIn[0]=='#' && dataIn[size-1]=='*')
         dataArray.insert(0,dataIn);
-    if(dataIn[0]!='#' && dataIn[size-1]=='*')
+    /*if(dataIn[0]!='#' && dataIn[size-1]=='*')
         dataArray.append(dataIn);
     if(dataIn[0]=='#' && dataIn[size-1]!='*')
-            dataArray.insert(0,dataIn);
+            dataArray.insert(0,dataIn);*/
   qDebug()<<"Array: "<<dataArray;
     if(dataArray[0]=='#' && dataArray[dataArray.size()-1]=='*'){
         fi  = dataArray.lastIndexOf(f);
@@ -126,7 +126,7 @@ void DataManager::processSerialData(QByteArray dataIn){
         qDebug()<<"Distance: "<<temp;
         temp.clear();
 
-        for(i=xx+2;i<dataArray.size()-2;i++)
+        for(i=xx+2;i<dataArray.size()-1;i++)
             temp.append(dataArray[i]);
         position = temp.toDouble();
         qDebug()<<"Position: "<<temp;
