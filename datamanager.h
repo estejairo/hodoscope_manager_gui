@@ -31,7 +31,7 @@ public slots:
     void sendSerialData(double,double,double,double);
     void sendPlot();
     void recieveDataFromMain(double, double, double, double,int);
-    void connectionType();
+    void connectionType(bool);
     void getSql();
     void getSignal();
   //  void createFile(QString);

@@ -2,9 +2,6 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 
-bool check = 1;
-bool last_check = 1;
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -208,9 +205,7 @@ void MainWindow::distance_valueChanged(double arg){
 
 void MainWindow::on_checkBox_toggled(bool checked)
 {
-    last_check = check;
-    check = checked;
-    //emit changeConnectionType(checked);
+    emit changeConnectionType(checked);
 }
 
 void MainWindow::on_toolButton_clicked()
@@ -223,8 +218,8 @@ void MainWindow::on_toolButton_clicked()
 void MainWindow::on_pushButton_2_clicked()
 {
     std::cout<<__FILE__<<__LINE__<<std::endl;
-    //bool checked = true;
-    emit changeConnectionType();
+    bool checked = true;
+    emit changeConnectionType(checked);
 }
 
 void MainWindow::setInitValues(){
