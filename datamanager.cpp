@@ -85,13 +85,17 @@ void DataManager::processSerialData(QByteArray dataIn){
     qDebug()<<"DataIn: "<<dataIn;
     size = dataIn.size();
 
-    if(dataIn[0]=='#' && dataIn[size-1]=='*')
+
+    if(dataIn[0]=='#' &&    dataIn[size-1]=='*')
         dataArray.insert(0,dataIn);
-    /*if(dataIn[0]!='#' && dataIn[size-1]=='*')
-        dataArray.append(dataIn);
     if(dataIn[0]=='#' && dataIn[size-1]!='*')
-            dataArray.insert(0,dataIn);*/
+            dataArray.insert(0,dataIn);
+    if(dataIn[0]!='#' &&  dataIn[size-1]=='*')
+        dataArray.append(dataIn);
+
+
   qDebug()<<"Array: "<<dataArray;
+
     if(dataArray[0]=='#' && dataArray[dataArray.size()-1]=='*'){
         fi  = dataArray.lastIndexOf(f);
         ai  = dataArray.lastIndexOf(a);
